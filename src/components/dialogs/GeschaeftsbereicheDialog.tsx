@@ -289,7 +289,7 @@ export function GeschaeftsbereicheDialog({ open, onClose, onSubmit, defaultValue
         <Label htmlFor="bezeichnung">{fieldLabel('geschaeftsbereiche', 'bezeichnung')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="bezeichnung"
-          placeholder="z. B. Elektrotechnik"
+          placeholder=""
           value={fields.bezeichnung ?? ''}
           onChange={e => setFields(f => ({ ...f, bezeichnung: e.target.value }))}
           required
@@ -304,7 +304,7 @@ export function GeschaeftsbereicheDialog({ open, onClose, onSubmit, defaultValue
         <Label htmlFor="kuerzel">{fieldLabel('geschaeftsbereiche', 'kuerzel')}</Label>
         <Input
           id="kuerzel"
-          placeholder="z. B. ET"
+          placeholder=""
           value={fields.kuerzel ?? ''}
           onChange={e => setFields(f => ({ ...f, kuerzel: e.target.value }))}
         />
@@ -315,7 +315,7 @@ export function GeschaeftsbereicheDialog({ open, onClose, onSubmit, defaultValue
         <Label htmlFor="zustaendigkeit">{fieldLabel('geschaeftsbereiche', 'zustaendigkeit')}</Label>
         <Textarea
           id="zustaendigkeit"
-          placeholder="Wofür ist der Bereich zuständig?"
+          placeholder=""
           value={fields.zustaendigkeit ?? ''}
           onChange={e => setFields(f => ({ ...f, zustaendigkeit: e.target.value }))}
           rows={3}
@@ -327,7 +327,7 @@ export function GeschaeftsbereicheDialog({ open, onClose, onSubmit, defaultValue
         <Label htmlFor="ansprechpartner_vorname">{fieldLabel('geschaeftsbereiche', 'ansprechpartner_vorname')}</Label>
         <Input
           id="ansprechpartner_vorname"
-          placeholder="z. B. Anna"
+          placeholder=""
           value={fields.ansprechpartner_vorname ?? ''}
           onChange={e => setFields(f => ({ ...f, ansprechpartner_vorname: e.target.value }))}
         />
@@ -338,7 +338,7 @@ export function GeschaeftsbereicheDialog({ open, onClose, onSubmit, defaultValue
         <Label htmlFor="ansprechpartner_nachname">{fieldLabel('geschaeftsbereiche', 'ansprechpartner_nachname')}</Label>
         <Input
           id="ansprechpartner_nachname"
-          placeholder="z. B. Müller"
+          placeholder=""
           value={fields.ansprechpartner_nachname ?? ''}
           onChange={e => setFields(f => ({ ...f, ansprechpartner_nachname: e.target.value }))}
         />
@@ -351,7 +351,7 @@ export function GeschaeftsbereicheDialog({ open, onClose, onSubmit, defaultValue
           id="ansprechpartner_email"
           type="email"
           inputMode="email"
-          placeholder="z. B. anna.mueller@firma.de"
+          placeholder=""
           value={fields.ansprechpartner_email ?? ''}
           onChange={e => setFields(f => ({ ...f, ansprechpartner_email: e.target.value }))}
         />

@@ -52,8 +52,8 @@ export default function AngebotsanfrageEinreichen() {
     ],
     required: { projekt: true, kunde_firma: true },
     messages: {
-      projekt: 'Bitte die Projekt- bzw. Produktbezeichnung eingeben.',
-      kunde_firma: 'Bitte die Firma eingeben.',
+      projekt: tx('Bitte die Projekt- bzw. Produktbezeichnung eingeben.'),
+      kunde_firma: tx('Bitte die Firma eingeben.'),
     },
     autoComplete: true,
   });

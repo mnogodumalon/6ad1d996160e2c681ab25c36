@@ -419,11 +419,11 @@ export const FIELD_RULES: Record<EntityKey, Record<string, FieldRule>> = {
       "label": "Status",
       "writable": true,
       "options": [
+        "offen",
+        "in_bearbeitung",
         "rueckfrage_kunde",
         "geklaert",
-        "offen",
-        "nicht_relevant",
-        "in_bearbeitung"
+        "nicht_relevant"
       ]
     },
     "frist": {
@@ -470,11 +470,11 @@ export const FIELD_RULES: Record<EntityKey, Record<string, FieldRule>> = {
       "label": "Auswirkung auf das Angebot",
       "writable": true,
       "options": [
+        "keine",
         "preis",
         "termin",
         "technik",
-        "ausschluss",
-        "keine"
+        "ausschluss"
       ]
     },
     "klaerungsdatum": {
@@ -484,6 +484,14 @@ export const FIELD_RULES: Record<EntityKey, Record<string, FieldRule>> = {
       "required": false,
       "label": "Datum der Klärung",
       "writable": true
+    },
+    "dokumentation": {
+      "key": "dokumentation",
+      "fulltype": "file",
+      "kind": "file",
+      "required": false,
+      "label": "Dokumentation",
+      "writable": false
     }
   }
 };

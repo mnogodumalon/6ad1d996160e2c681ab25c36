@@ -43,8 +43,8 @@ export interface IntentLink {
 
 export const INTENTS: IntentLink[] = [
   // <custom:intents>
-  { path: '/intents/klaerpunkt-bearbeiten', label: { de: 'Klärpunkt beantworten', en: 'Answer clarification point' }, icon: IconMessageCheck, description: 'Ein Bereich beantwortet einen offenen Klärpunkt, hält die Auswirkung auf das Angebot fest und setzt ihn auf geklärt oder Rückfrage.' },
-  { path: '/intents/klaerung-abschliessen', label: { de: 'Anfrage freigeben', en: 'Release request for quotation' }, icon: IconRosetteDiscountCheck, description: 'Wenn alle Klärpunkte einer Anfrage erledigt sind, wird die Anfrage zur Angebotserstellung freigegeben.' },
+  { path: '/intents/klaerpunkt-bearbeiten', label: { de: 'Klärpunkt beantworten', en: 'Answer clarification point' }, icon: IconMessageCheck, description: { de: 'Ein Bereich beantwortet einen offenen Klärpunkt, hält die Auswirkung auf das Angebot fest und setzt ihn auf geklärt oder Rückfrage.', en: 'A department answers an open clarification point, records the impact on the quotation, and sets it to clarified or follow-up question.' } },
+  { path: '/intents/klaerung-abschliessen', label: { de: 'Anfrage freigeben', en: 'Release request for quotation' }, icon: IconRosetteDiscountCheck, description: { de: 'Wenn alle Klärpunkte einer Anfrage erledigt sind, wird die Anfrage zur Angebotserstellung freigegeben.', en: 'When all clarification points of a request are resolved, the request is released for quotation preparation.' } },
   // </custom:intents>
 ];
 
@@ -64,5 +64,5 @@ export const INTENTS_PENDING = false;
  * pulsing "werden erstellt …" in every deployed Phase-1 bundle forever — no
  * code path redeploys Phase 1 without the flag (live 03.09.2026).
  */
-export const INTENTS_PENDING_SINCE: string | null = '2026-10-16T08:02:01+00:00';
+export const INTENTS_PENDING_SINCE: string | null = null;
 export const PENDING_MAX_MINUTES = 30;

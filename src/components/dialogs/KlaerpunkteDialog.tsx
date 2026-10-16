@@ -17,7 +17,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import type { Klaerpunkte, Angebotsanfragen, Geschaeftsbereiche, LookupValue } from '@/types/app';
 import { APP_IDS, LOOKUP_OPTIONS } from '@/types/app';
-import { extractRecordId, createRecordUrl, cleanFieldsForApi, getUserProfile, LivingAppsService } from '@/services/livingAppsService';
+import { extractRecordId, createRecordUrl, cleanFieldsForApi, uploadFile, getUserProfile, LivingAppsService } from '@/services/livingAppsService';
 import {
   Dialog, DialogContent, DialogHeader,
   DialogTitle, DialogFooter,
@@ -42,7 +42,7 @@ import { GeschaeftsbereicheDialog } from '@/components/dialogs/Geschaeftsbereich
 import { DatePicker } from '@/components/DatePicker';
 import { Checkbox } from '@/components/ui/checkbox';
 import { IconAlertCircle, IconCamera, IconChevronDown, IconCircleCheck, IconClipboard, IconFileText, IconLoader2, IconPhotoPlus, IconSparkles, IconUpload, IconX } from '@tabler/icons-react';
-import { fileToDataUri, extractFromInput, extractPhotoMeta, reverseGeocode } from '@/lib/ai';
+import { fileToDataUri, extractFromInput, extractPhotoMeta, reverseGeocode, dataUriToBlob } from '@/lib/ai';
 import { lookupKey, lookupKeys } from '@/lib/formatters';
 
 /** Widened prefill type for KlaerpunkteDialog.defaultValues — see file header. */
@@ -309,7 +309,7 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
         }
       }
       const photoContext = contextParts.length ? contextParts.join('\n') : undefined;
-      const schema = `{\n  "anfrage": string | null, // Display name from Angebotsanfragen (see <available-records>)\n  "geschaeftsbereich": string | null, // Display name from Geschäftsbereiche (see <available-records>)\n  "titel": string | null, // Titel\n  "frage": string | null, // Beschreibung der Frage\n  "art": LookupValue | null, // Art der Klärung (select one key: "technisch" | "kommerziell" | "termin" | "qualitaet" | "logistik" | "rechtliches" | "sonstiges") mapping: technisch=Technisch, kommerziell=Kommerziell, termin=Termin, qualitaet=Qualität, logistik=Logistik, rechtliches=Rechtliches, sonstiges=Sonstiges\n  "prioritaet": LookupValue | null, // Priorität (select one key: "niedrig" | "normal" | "hoch" | "dringend") mapping: niedrig=Niedrig, normal=Normal, hoch=Hoch, dringend=Dringend\n  "status": LookupValue | null, // Status (select one key: "rueckfrage_kunde" | "geklaert" | "offen" | "nicht_relevant" | "in_bearbeitung") mapping: rueckfrage_kunde=Rückfrage an Kunde, geklaert=Geklärt, offen=Offen, nicht_relevant=Nicht relevant, in_bearbeitung=In Bearbeitung\n  "frist": string | null, // YYYY-MM-DD\n  "bearbeiter_vorname": string | null, // Vorname Bearbeiter/in\n  "bearbeiter_nachname": string | null, // Nachname Bearbeiter/in\n  "antwort": string | null, // Antwort bzw. Ergebnis\n  "auswirkung": LookupValue[] | null, // Auswirkung auf das Angebot (select one or more keys: "preis" | "termin" | "technik" | "ausschluss" | "keine") mapping: preis=Preis, termin=Termin, technik=Technik, ausschluss=Ausschluss, keine=Keine\n  "klaerungsdatum": string | null, // YYYY-MM-DD\n}`;
+      const schema = `{\n  "anfrage": string | null, // Display name from Angebotsanfragen (see <available-records>)\n  "geschaeftsbereich": string | null, // Display name from Geschäftsbereiche (see <available-records>)\n  "titel": string | null, // Titel\n  "frage": string | null, // Beschreibung der Frage\n  "art": LookupValue | null, // Art der Klärung (select one key: "technisch" | "kommerziell" | "termin" | "qualitaet" | "logistik" | "rechtliches" | "sonstiges") mapping: technisch=Technisch, kommerziell=Kommerziell, termin=Termin, qualitaet=Qualität, logistik=Logistik, rechtliches=Rechtliches, sonstiges=Sonstiges\n  "prioritaet": LookupValue | null, // Priorität (select one key: "niedrig" | "normal" | "hoch" | "dringend") mapping: niedrig=Niedrig, normal=Normal, hoch=Hoch, dringend=Dringend\n  "status": LookupValue | null, // Status (select one key: "offen" | "in_bearbeitung" | "rueckfrage_kunde" | "geklaert" | "nicht_relevant") mapping: offen=Offen, in_bearbeitung=In Bearbeitung, rueckfrage_kunde=Rückfrage an Kunde, geklaert=Geklärt, nicht_relevant=Nicht relevant\n  "frist": string | null, // YYYY-MM-DD\n  "bearbeiter_vorname": string | null, // Vorname Bearbeiter/in\n  "bearbeiter_nachname": string | null, // Nachname Bearbeiter/in\n  "antwort": string | null, // Antwort bzw. Ergebnis\n  "auswirkung": LookupValue[] | null, // Auswirkung auf das Angebot (select one or more keys: "keine" | "preis" | "termin" | "technik" | "ausschluss") mapping: keine=Keine, preis=Preis, termin=Termin, technik=Technik, ausschluss=Ausschluss\n  "klaerungsdatum": string | null, // YYYY-MM-DD\n}`;
       const raw = await extractFromInput<Record<string, unknown>>(schema, {
         dataUri: uri,
         userText: aiText.trim() || undefined,
@@ -339,6 +339,16 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
         }
         return merged as Partial<Klaerpunkte['fields']>;
       });
+      // Upload scanned file to file fields
+      if (file && (file.type.startsWith('image/') || file.type === 'application/pdf')) {
+        try {
+          const blob = dataUriToBlob(uri!);
+          const fileUrl = await uploadFile(blob, file.name);
+          setFields(prev => ({ ...prev, dokumentation: fileUrl }));
+        } catch (uploadErr) {
+          console.error('File upload failed:', uploadErr);
+        }
+      }
       setAiText('');
       setScanSuccess(true);
       setTimeout(() => setScanSuccess(false), 3000);
@@ -388,7 +398,7 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
         <Label htmlFor="anfrage">{fieldLabel('klaerpunkte', 'anfrage')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Combobox
           id="anfrage"
-          placeholder="Welche Anfrage?"
+          placeholder=""
           items={angebotsanfragenListAll.map(r => ({
             id: r.record_id,
             label: String(r.fields.anfragenummer ?? r.record_id),
@@ -408,7 +418,7 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
         <Label htmlFor="geschaeftsbereich">{fieldLabel('klaerpunkte', 'geschaeftsbereich')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Combobox
           id="geschaeftsbereich"
-          placeholder="Welcher Geschäftsbereich?"
+          placeholder=""
           items={geschaeftsbereicheListAll.map(r => ({
             id: r.record_id,
             label: String(r.fields.bezeichnung ?? r.record_id),
@@ -428,7 +438,7 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
         <Label htmlFor="titel">{fieldLabel('klaerpunkte', 'titel')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="titel"
-          placeholder="z. B. Toleranz Bohrung"
+          placeholder=""
           value={fields.titel ?? ''}
           onChange={e => setFields(f => ({ ...f, titel: e.target.value }))}
           required
@@ -443,7 +453,7 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
         <Label htmlFor="frage">{fieldLabel('klaerpunkte', 'frage')}</Label>
         <Textarea
           id="frage"
-          placeholder="Was ist zu klären?"
+          placeholder=""
           value={fields.frage ?? ''}
           onChange={e => setFields(f => ({ ...f, frage: e.target.value }))}
           rows={3}
@@ -457,7 +467,7 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
           value={lookupKey(fields.art) ?? ''}
           onValueChange={v => setFields(f => ({ ...f, art: v === 'none' ? undefined : v as any }))}
         >
-          <SelectTrigger id="art" className="max-sm:h-11"><SelectValue placeholder="z. B. Technisch, Termin" /></SelectTrigger>
+          <SelectTrigger id="art" className="max-sm:h-11"><SelectValue placeholder="" /></SelectTrigger>
           <SelectContent>
             <SelectItem value="none">—</SelectItem>
             <SelectItem value="technisch">{lookupLabel('klaerpunkte', 'art', 'technisch') ?? 'Technisch'}</SelectItem>
@@ -537,6 +547,32 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
           <button
             type="button"
             role="radio"
+            aria-checked={lookupKey(fields.status) === 'offen'}
+            onClick={() => setFields(f => ({ ...f, status: (lookupKey(f.status) === 'offen' ? undefined : 'offen') as any }))}
+            className={`inline-flex items-center justify-center min-h-9 max-sm:min-h-11 max-sm:px-4 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+              lookupKey(fields.status) === 'offen'
+                ? 'bg-foreground text-background border-foreground'
+                : 'bg-background text-foreground border-input hover:bg-accent'
+            }`}
+          >
+            {lookupLabel('klaerpunkte', 'status', 'offen') ?? 'Offen'}
+          </button>
+          <button
+            type="button"
+            role="radio"
+            aria-checked={lookupKey(fields.status) === 'in_bearbeitung'}
+            onClick={() => setFields(f => ({ ...f, status: (lookupKey(f.status) === 'in_bearbeitung' ? undefined : 'in_bearbeitung') as any }))}
+            className={`inline-flex items-center justify-center min-h-9 max-sm:min-h-11 max-sm:px-4 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
+              lookupKey(fields.status) === 'in_bearbeitung'
+                ? 'bg-foreground text-background border-foreground'
+                : 'bg-background text-foreground border-input hover:bg-accent'
+            }`}
+          >
+            {lookupLabel('klaerpunkte', 'status', 'in_bearbeitung') ?? 'In Bearbeitung'}
+          </button>
+          <button
+            type="button"
+            role="radio"
             aria-checked={lookupKey(fields.status) === 'rueckfrage_kunde'}
             onClick={() => setFields(f => ({ ...f, status: (lookupKey(f.status) === 'rueckfrage_kunde' ? undefined : 'rueckfrage_kunde') as any }))}
             className={`inline-flex items-center justify-center min-h-9 max-sm:min-h-11 max-sm:px-4 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
@@ -563,19 +599,6 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
           <button
             type="button"
             role="radio"
-            aria-checked={lookupKey(fields.status) === 'offen'}
-            onClick={() => setFields(f => ({ ...f, status: (lookupKey(f.status) === 'offen' ? undefined : 'offen') as any }))}
-            className={`inline-flex items-center justify-center min-h-9 max-sm:min-h-11 max-sm:px-4 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-              lookupKey(fields.status) === 'offen'
-                ? 'bg-foreground text-background border-foreground'
-                : 'bg-background text-foreground border-input hover:bg-accent'
-            }`}
-          >
-            {lookupLabel('klaerpunkte', 'status', 'offen') ?? 'Offen'}
-          </button>
-          <button
-            type="button"
-            role="radio"
             aria-checked={lookupKey(fields.status) === 'nicht_relevant'}
             onClick={() => setFields(f => ({ ...f, status: (lookupKey(f.status) === 'nicht_relevant' ? undefined : 'nicht_relevant') as any }))}
             className={`inline-flex items-center justify-center min-h-9 max-sm:min-h-11 max-sm:px-4 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
@@ -585,19 +608,6 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
             }`}
           >
             {lookupLabel('klaerpunkte', 'status', 'nicht_relevant') ?? 'Nicht relevant'}
-          </button>
-          <button
-            type="button"
-            role="radio"
-            aria-checked={lookupKey(fields.status) === 'in_bearbeitung'}
-            onClick={() => setFields(f => ({ ...f, status: (lookupKey(f.status) === 'in_bearbeitung' ? undefined : 'in_bearbeitung') as any }))}
-            className={`inline-flex items-center justify-center min-h-9 max-sm:min-h-11 max-sm:px-4 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
-              lookupKey(fields.status) === 'in_bearbeitung'
-                ? 'bg-foreground text-background border-foreground'
-                : 'bg-background text-foreground border-input hover:bg-accent'
-            }`}
-          >
-            {lookupLabel('klaerpunkte', 'status', 'in_bearbeitung') ?? 'In Bearbeitung'}
           </button>
         </div>
         {showErrors && !fields.status && (
@@ -610,7 +620,7 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
         <Label htmlFor="frist">{fieldLabel('klaerpunkte', 'frist')}</Label>
         <DatePicker
           id="frist"
-          placeholder="Bis wann klären?"
+          placeholder=""
           mode="date"
           value={fields.frist ?? null}
           onChange={v => setFields(f => ({ ...f, frist: v ?? undefined }))}
@@ -622,7 +632,7 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
         <Label htmlFor="bearbeiter_vorname">{fieldLabel('klaerpunkte', 'bearbeiter_vorname')}</Label>
         <Input
           id="bearbeiter_vorname"
-          placeholder="z. B. Anna"
+          placeholder=""
           value={fields.bearbeiter_vorname ?? ''}
           onChange={e => setFields(f => ({ ...f, bearbeiter_vorname: e.target.value }))}
         />
@@ -633,7 +643,7 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
         <Label htmlFor="bearbeiter_nachname">{fieldLabel('klaerpunkte', 'bearbeiter_nachname')}</Label>
         <Input
           id="bearbeiter_nachname"
-          placeholder="z. B. Müller"
+          placeholder=""
           value={fields.bearbeiter_nachname ?? ''}
           onChange={e => setFields(f => ({ ...f, bearbeiter_nachname: e.target.value }))}
         />
@@ -644,7 +654,7 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
         <Label htmlFor="antwort">{fieldLabel('klaerpunkte', 'antwort')}</Label>
         <Textarea
           id="antwort"
-          placeholder="Was ist das Ergebnis?"
+          placeholder=""
           value={fields.antwort ?? ''}
           onChange={e => setFields(f => ({ ...f, antwort: e.target.value }))}
           rows={3}
@@ -655,6 +665,20 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
       <div key="auswirkung" className="space-y-1.5">
         <Label htmlFor="auswirkung">{fieldLabel('klaerpunkte', 'auswirkung')}</Label>
         <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Checkbox
+              id="auswirkung_keine"
+              checked={lookupKeys(fields.auswirkung).includes('keine')}
+              onCheckedChange={(checked) => {
+                setFields(f => {
+                  const current = lookupKeys(f.auswirkung);
+                  const next = checked ? [...current, 'keine'] : current.filter(k => k !== 'keine');
+                  return { ...f, auswirkung: next.length ? next as any : undefined };
+                });
+              }}
+            />
+            <Label htmlFor="auswirkung_keine" className="font-normal">{lookupLabel('klaerpunkte', 'auswirkung', 'keine') ?? 'Keine'}</Label>
+          </div>
           <div className="flex items-center gap-2">
             <Checkbox
               id="auswirkung_preis"
@@ -711,20 +735,6 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
             />
             <Label htmlFor="auswirkung_ausschluss" className="font-normal">{lookupLabel('klaerpunkte', 'auswirkung', 'ausschluss') ?? 'Ausschluss'}</Label>
           </div>
-          <div className="flex items-center gap-2">
-            <Checkbox
-              id="auswirkung_keine"
-              checked={lookupKeys(fields.auswirkung).includes('keine')}
-              onCheckedChange={(checked) => {
-                setFields(f => {
-                  const current = lookupKeys(f.auswirkung);
-                  const next = checked ? [...current, 'keine'] : current.filter(k => k !== 'keine');
-                  return { ...f, auswirkung: next.length ? next as any : undefined };
-                });
-              }}
-            />
-            <Label htmlFor="auswirkung_keine" className="font-normal">{lookupLabel('klaerpunkte', 'auswirkung', 'keine') ?? 'Keine'}</Label>
-          </div>
         </div>
       </div>
     ),
@@ -733,11 +743,81 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
         <Label htmlFor="klaerungsdatum">{fieldLabel('klaerpunkte', 'klaerungsdatum')}</Label>
         <DatePicker
           id="klaerungsdatum"
-          placeholder="Wann wurde geklärt?"
+          placeholder=""
           mode="date"
           value={fields.klaerungsdatum ?? null}
           onChange={v => setFields(f => ({ ...f, klaerungsdatum: v ?? undefined }))}
         />
+      </div>
+    ),
+    'dokumentation': (
+      <div key="dokumentation" className="space-y-1.5">
+        <Label htmlFor="dokumentation">{fieldLabel('klaerpunkte', 'dokumentation')}</Label>
+        {fields.dokumentation ? (
+          <div className="flex items-center gap-3 rounded-lg border p-2">
+            <div className="relative h-14 w-14 shrink-0 rounded-md bg-muted overflow-hidden">
+              <div className="absolute inset-0 flex items-center justify-center">
+                <IconFileText size={20} className="text-muted-foreground" />
+              </div>
+              <img
+                src={fields.dokumentation}
+                alt=""
+                className="relative h-full w-full object-cover"
+                onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+              />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm truncate text-foreground">{fields.dokumentation.split("/").pop()}</p>
+              <div className="flex gap-2 mt-1">
+                <label
+                  className="text-xs text-primary hover:underline cursor-pointer"
+                >
+                  {t('fr_change')}
+                  <input
+                    type="file"
+                    accept="image/*,.pdf"
+                    className="hidden"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (!file) return;
+                      try {
+                        const fileUrl = await uploadFile(file, file.name);
+                        setFields(f => ({ ...f, dokumentation: fileUrl }));
+                      } catch (err) { console.error('Upload failed:', err); }
+                    }}
+                  />
+                </label>
+                <button
+                  type="button"
+                  className="text-xs text-muted-foreground hover:text-destructive"
+                  onClick={() => setFields(f => ({ ...f, dokumentation: undefined }))}
+                >
+                  {t('fr_remove')}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <label
+            className="flex flex-col items-center justify-center gap-1.5 rounded-lg border-2 border-dashed border-muted-foreground/25 p-4 cursor-pointer hover:border-primary/50 hover:bg-muted/50 transition-colors"
+          >
+            <IconUpload size={20} className="text-muted-foreground" />
+            <span className="text-sm text-muted-foreground">{t('fr_upload_file')}</span>
+            <input
+              type="file"
+              accept="image/*,.pdf"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                try {
+                  const fileUrl = await uploadFile(file, file.name);
+                  setFields(f => ({ ...f, dokumentation: fileUrl }));
+                } catch (err) { console.error('Upload failed:', err); }
+              }}
+            />
+          </label>
+        )}
       </div>
     ),
   };
@@ -754,7 +834,7 @@ export function KlaerpunkteDialog({ open, onClose, onSubmit, defaultValues, reco
   //     kein passendes Backend-Feld in orderedFields) erscheinen NICHT als
   //     Input, sondern unten als kompakte 'Berechnungen'-Übersicht oder als
   //     Inline-Hint unter dem letzten beitragenden Input.
-  const FIELD_LABELS: Record<string, string> = {"anfrage": "Angebotsanfrage", "geschaeftsbereich": "Zuständiger Geschäftsbereich", "titel": "Titel", "frage": "Beschreibung der Frage", "art": "Art der Klärung", "prioritaet": "Priorität", "status": "Status", "frist": "Frist", "bearbeiter_vorname": "Vorname Bearbeiter/in", "bearbeiter_nachname": "Nachname Bearbeiter/in", "antwort": "Antwort bzw. Ergebnis", "auswirkung": "Auswirkung auf das Angebot", "klaerungsdatum": "Datum der Klärung"};
+  const FIELD_LABELS: Record<string, string> = {"anfrage": "Angebotsanfrage", "geschaeftsbereich": "Zuständiger Geschäftsbereich", "titel": "Titel", "frage": "Beschreibung der Frage", "art": "Art der Klärung", "prioritaet": "Priorität", "status": "Status", "frist": "Frist", "bearbeiter_vorname": "Vorname Bearbeiter/in", "bearbeiter_nachname": "Nachname Bearbeiter/in", "antwort": "Antwort bzw. Ergebnis", "auswirkung": "Auswirkung auf das Angebot", "klaerungsdatum": "Datum der Klärung", "dokumentation": "Dokumentation"};
   const CURRENCY_KEYS = new Set<string>([]);
   // Applookup-Referenz-Labels: pro applookup-Feld in dieser Form (ownKey)
   // eine Map { lookupKey: label } für ALLE Felder des Target-Schemas. Wird

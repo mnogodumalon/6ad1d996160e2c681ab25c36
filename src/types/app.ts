@@ -104,6 +104,7 @@ export interface Klaerpunkte {
     antwort?: string;
     auswirkung?: LookupValue[];
     klaerungsdatum?: string; // Format: YYYY-MM-DD oder ISO String
+    dokumentation?: string;
   };
 }
 
@@ -122,8 +123,8 @@ export const LOOKUP_OPTIONS: Record<string, Record<string, {key: string, label: 
   'klaerpunkte': {
     art: [{ key: "technisch", get label() { return lookupLabel('klaerpunkte', 'art', "technisch") ?? "Technisch"; } }, { key: "kommerziell", get label() { return lookupLabel('klaerpunkte', 'art', "kommerziell") ?? "Kommerziell"; } }, { key: "termin", get label() { return lookupLabel('klaerpunkte', 'art', "termin") ?? "Termin"; } }, { key: "qualitaet", get label() { return lookupLabel('klaerpunkte', 'art', "qualitaet") ?? "Qualität"; } }, { key: "logistik", get label() { return lookupLabel('klaerpunkte', 'art', "logistik") ?? "Logistik"; } }, { key: "rechtliches", get label() { return lookupLabel('klaerpunkte', 'art', "rechtliches") ?? "Rechtliches"; } }, { key: "sonstiges", get label() { return lookupLabel('klaerpunkte', 'art', "sonstiges") ?? "Sonstiges"; } }],
     prioritaet: [{ key: "niedrig", get label() { return lookupLabel('klaerpunkte', 'prioritaet', "niedrig") ?? "Niedrig"; } }, { key: "normal", get label() { return lookupLabel('klaerpunkte', 'prioritaet', "normal") ?? "Normal"; } }, { key: "hoch", get label() { return lookupLabel('klaerpunkte', 'prioritaet', "hoch") ?? "Hoch"; } }, { key: "dringend", get label() { return lookupLabel('klaerpunkte', 'prioritaet', "dringend") ?? "Dringend"; } }],
-    status: [{ key: "rueckfrage_kunde", get label() { return lookupLabel('klaerpunkte', 'status', "rueckfrage_kunde") ?? "Rückfrage an Kunde"; } }, { key: "geklaert", get label() { return lookupLabel('klaerpunkte', 'status', "geklaert") ?? "Geklärt"; } }, { key: "offen", get label() { return lookupLabel('klaerpunkte', 'status', "offen") ?? "Offen"; } }, { key: "nicht_relevant", get label() { return lookupLabel('klaerpunkte', 'status', "nicht_relevant") ?? "Nicht relevant"; } }, { key: "in_bearbeitung", get label() { return lookupLabel('klaerpunkte', 'status', "in_bearbeitung") ?? "In Bearbeitung"; } }],
-    auswirkung: [{ key: "preis", get label() { return lookupLabel('klaerpunkte', 'auswirkung', "preis") ?? "Preis"; } }, { key: "termin", get label() { return lookupLabel('klaerpunkte', 'auswirkung', "termin") ?? "Termin"; } }, { key: "technik", get label() { return lookupLabel('klaerpunkte', 'auswirkung', "technik") ?? "Technik"; } }, { key: "ausschluss", get label() { return lookupLabel('klaerpunkte', 'auswirkung', "ausschluss") ?? "Ausschluss"; } }, { key: "keine", get label() { return lookupLabel('klaerpunkte', 'auswirkung', "keine") ?? "Keine"; } }],
+    status: [{ key: "offen", get label() { return lookupLabel('klaerpunkte', 'status', "offen") ?? "Offen"; } }, { key: "in_bearbeitung", get label() { return lookupLabel('klaerpunkte', 'status', "in_bearbeitung") ?? "In Bearbeitung"; } }, { key: "rueckfrage_kunde", get label() { return lookupLabel('klaerpunkte', 'status', "rueckfrage_kunde") ?? "Rückfrage an Kunde"; } }, { key: "geklaert", get label() { return lookupLabel('klaerpunkte', 'status', "geklaert") ?? "Geklärt"; } }, { key: "nicht_relevant", get label() { return lookupLabel('klaerpunkte', 'status', "nicht_relevant") ?? "Nicht relevant"; } }],
+    auswirkung: [{ key: "keine", get label() { return lookupLabel('klaerpunkte', 'auswirkung', "keine") ?? "Keine"; } }, { key: "preis", get label() { return lookupLabel('klaerpunkte', 'auswirkung', "preis") ?? "Preis"; } }, { key: "termin", get label() { return lookupLabel('klaerpunkte', 'auswirkung', "termin") ?? "Termin"; } }, { key: "technik", get label() { return lookupLabel('klaerpunkte', 'auswirkung', "technik") ?? "Technik"; } }, { key: "ausschluss", get label() { return lookupLabel('klaerpunkte', 'auswirkung', "ausschluss") ?? "Ausschluss"; } }],
   },
 };
 
@@ -177,6 +178,7 @@ export const FIELD_TYPES: Record<string, Record<string, string>> = {
     'antwort': 'string/textarea',
     'auswirkung': 'multiplelookup/checkbox',
     'klaerungsdatum': 'date/date',
+    'dokumentation': 'file',
   },
 };
 

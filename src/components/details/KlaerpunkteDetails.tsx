@@ -6,6 +6,7 @@ import {
 } from '@/components/widgets/RecordView';
 import { t, appLabel, fieldLabel } from '@/i18n';
 import { usePermissions } from '@/lib/permissions';
+import { MediaThumbnail } from '@/components/widgets/MediaViewer';
 
 export interface KlaerpunkteDetailsProps {
   /** Der Record — enriched oder roh; alle Felder werden hier gerendert. */
@@ -45,6 +46,11 @@ export function KlaerpunkteDetails({
         <RecordField label={fieldLabel('klaerpunkte', 'antwort')} value={record.fields.antwort} format="longtext" className="md:col-span-2" />
         <RecordField label={fieldLabel('klaerpunkte', 'auswirkung')} value={Array.isArray(record.fields.auswirkung) ? record.fields.auswirkung.map((v: unknown) => (v && typeof v === 'object' && 'label' in v) ? (v as {label: unknown}).label : v).join(', ') : null} format="text" />
         <RecordField label={fieldLabel('klaerpunkte', 'klaerungsdatum')} value={record.fields.klaerungsdatum} format="date" />
+        <RecordField label={fieldLabel('klaerpunkte', 'dokumentation')} className="md:col-span-2">
+          {record.fields.dokumentation ? (
+            <MediaThumbnail src={record.fields.dokumentation as string} fit="contain" className="max-h-64 w-full rounded-lg" />
+          ) : '—'}
+        </RecordField>
       </RecordSection>
 
       {/* N:1 — verknüpfte Records: IMMER klickbar, nie eine Text-Sackgasse. */}

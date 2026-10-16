@@ -14,7 +14,7 @@
  * Facts from the metadata — candidates, NOT decisions:
  *   - geschaeftsbereiche: no date pair, no references
  *   - angebotsanfragen: applookups federfuehrender_bereich→geschaeftsbereiche · lookups gesamtstatus[neu|in_klaerung|bereit_angebot|angebot_erstellt|abgelehnt], prioritaet[niedrig|normal|hoch|dringend]
- *   - klaerpunkte: applookups anfrage→angebotsanfragen, geschaeftsbereich→geschaeftsbereiche · lookups art[technisch|kommerziell|termin|qualitaet|logistik|rechtliches|sonstiges], prioritaet[niedrig|normal|hoch|dringend], status[rueckfrage_kunde|geklaert|offen|nicht_relevant|in_bearbeitung]
+ *   - klaerpunkte: applookups anfrage→angebotsanfragen, geschaeftsbereich→geschaeftsbereiche · lookups art[technisch|kommerziell|termin|qualitaet|logistik|rechtliches|sonstiges], prioritaet[niedrig|normal|hoch|dringend], status[offen|in_bearbeitung|rueckfrage_kunde|geklaert|nicht_relevant]
  */
 import type { EntityKey } from '@/lib/journey/rules';
 

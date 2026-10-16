@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "changes": [
+    {
+      "kind": "field_added",
+      "entity": "klaerpunkte",
+      "field": "dokumentation",
+      "fulltype": "file",
+      "label": "Dokumentation"
+    }
+  ],
+  "counts": {
+    "field_added": 1
+  },
+  "harmless_only": false
+}

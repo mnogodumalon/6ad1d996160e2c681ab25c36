@@ -352,7 +352,7 @@ export function AngebotsanfragenDialog({ open, onClose, onSubmit, defaultValues,
         <Label htmlFor="anfragenummer">{fieldLabel('angebotsanfragen', 'anfragenummer')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="anfragenummer"
-          placeholder="z. B. AF-2026-001"
+          placeholder=""
           value={fields.anfragenummer ?? ''}
           onChange={e => setFields(f => ({ ...f, anfragenummer: e.target.value }))}
           required
@@ -367,7 +367,7 @@ export function AngebotsanfragenDialog({ open, onClose, onSubmit, defaultValues,
         <Label htmlFor="projekt">{fieldLabel('angebotsanfragen', 'projekt')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="projekt"
-          placeholder="z. B. Hydraulikpumpe Typ X"
+          placeholder=""
           value={fields.projekt ?? ''}
           onChange={e => setFields(f => ({ ...f, projekt: e.target.value }))}
           required
@@ -382,7 +382,7 @@ export function AngebotsanfragenDialog({ open, onClose, onSubmit, defaultValues,
         <Label htmlFor="eingangsdatum">{fieldLabel('angebotsanfragen', 'eingangsdatum')}</Label>
         <DatePicker
           id="eingangsdatum"
-          placeholder="Wann ging die Anfrage ein?"
+          placeholder=""
           mode="date"
           value={fields.eingangsdatum ?? null}
           onChange={v => setFields(f => ({ ...f, eingangsdatum: v ?? undefined }))}
@@ -394,7 +394,7 @@ export function AngebotsanfragenDialog({ open, onClose, onSubmit, defaultValues,
         <Label htmlFor="angebotstermin">{fieldLabel('angebotsanfragen', 'angebotstermin')}</Label>
         <DatePicker
           id="angebotstermin"
-          placeholder="Bis wann braucht der Kunde das Angebot?"
+          placeholder=""
           mode="date"
           value={fields.angebotstermin ?? null}
           onChange={v => setFields(f => ({ ...f, angebotstermin: v ?? undefined }))}
@@ -410,7 +410,7 @@ export function AngebotsanfragenDialog({ open, onClose, onSubmit, defaultValues,
           inputMode="decimal"
           step="any"
           {...numberInputProps(formEnhancements, 'volumen')}
-          placeholder="z. B. 25000"
+          placeholder=""
           value={fields.volumen !== undefined ? fields.volumen : (computedValues['volumen'] ?? '')}
           onChange={e => setFields(f => ({ ...f, volumen: clampNumberValue(formEnhancements, 'volumen', e.target.value) }))}
         />
@@ -421,7 +421,7 @@ export function AngebotsanfragenDialog({ open, onClose, onSubmit, defaultValues,
         <Label htmlFor="kunde_firma">{fieldLabel('angebotsanfragen', 'kunde_firma')} <span className="text-destructive" aria-hidden="true">*</span></Label>
         <Input
           id="kunde_firma"
-          placeholder="z. B. Müller Maschinenbau GmbH"
+          placeholder=""
           value={fields.kunde_firma ?? ''}
           onChange={e => setFields(f => ({ ...f, kunde_firma: e.target.value }))}
           required
@@ -436,7 +436,7 @@ export function AngebotsanfragenDialog({ open, onClose, onSubmit, defaultValues,
         <Label htmlFor="kunde_vorname">{fieldLabel('angebotsanfragen', 'kunde_vorname')}</Label>
         <Input
           id="kunde_vorname"
-          placeholder="z. B. Anna"
+          placeholder=""
           value={fields.kunde_vorname ?? ''}
           onChange={e => setFields(f => ({ ...f, kunde_vorname: e.target.value }))}
         />
@@ -447,7 +447,7 @@ export function AngebotsanfragenDialog({ open, onClose, onSubmit, defaultValues,
         <Label htmlFor="kunde_nachname">{fieldLabel('angebotsanfragen', 'kunde_nachname')}</Label>
         <Input
           id="kunde_nachname"
-          placeholder="z. B. Schmidt"
+          placeholder=""
           value={fields.kunde_nachname ?? ''}
           onChange={e => setFields(f => ({ ...f, kunde_nachname: e.target.value }))}
         />
@@ -458,7 +458,7 @@ export function AngebotsanfragenDialog({ open, onClose, onSubmit, defaultValues,
         <Label htmlFor="beschreibung">{fieldLabel('angebotsanfragen', 'beschreibung')}</Label>
         <Textarea
           id="beschreibung"
-          placeholder="Worum geht es in der Anfrage?"
+          placeholder=""
           value={fields.beschreibung ?? ''}
           onChange={e => setFields(f => ({ ...f, beschreibung: e.target.value }))}
           rows={3}
@@ -604,7 +604,7 @@ export function AngebotsanfragenDialog({ open, onClose, onSubmit, defaultValues,
         <Label htmlFor="federfuehrender_bereich">{fieldLabel('angebotsanfragen', 'federfuehrender_bereich')}</Label>
         <Combobox
           id="federfuehrender_bereich"
-          placeholder="Welcher Bereich führt?"
+          placeholder=""
           items={geschaeftsbereicheListAll.map(r => ({
             id: r.record_id,
             label: String(r.fields.bezeichnung ?? r.record_id),
@@ -621,7 +621,7 @@ export function AngebotsanfragenDialog({ open, onClose, onSubmit, defaultValues,
         <Label htmlFor="vertrieb_vorname">{fieldLabel('angebotsanfragen', 'vertrieb_vorname')}</Label>
         <Input
           id="vertrieb_vorname"
-          placeholder="z. B. Thomas"
+          placeholder=""
           value={fields.vertrieb_vorname ?? ''}
           onChange={e => setFields(f => ({ ...f, vertrieb_vorname: e.target.value }))}
         />
@@ -632,7 +632,7 @@ export function AngebotsanfragenDialog({ open, onClose, onSubmit, defaultValues,
         <Label htmlFor="vertrieb_nachname">{fieldLabel('angebotsanfragen', 'vertrieb_nachname')}</Label>
         <Input
           id="vertrieb_nachname"
-          placeholder="z. B. Weber"
+          placeholder=""
           value={fields.vertrieb_nachname ?? ''}
           onChange={e => setFields(f => ({ ...f, vertrieb_nachname: e.target.value }))}
         />
@@ -643,7 +643,7 @@ export function AngebotsanfragenDialog({ open, onClose, onSubmit, defaultValues,
         <Label htmlFor="bemerkungen">{fieldLabel('angebotsanfragen', 'bemerkungen')}</Label>
         <Textarea
           id="bemerkungen"
-          placeholder="Interne Hinweise zur Anfrage"
+          placeholder=""
           value={fields.bemerkungen ?? ''}
           onChange={e => setFields(f => ({ ...f, bemerkungen: e.target.value }))}
           rows={3}

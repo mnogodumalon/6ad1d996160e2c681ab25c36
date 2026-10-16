@@ -1665,7 +1665,8 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
           "bearbeiter_nachname": "Nachname Bearbeiter/in",
           "antwort": "Antwort bzw. Ergebnis",
           "auswirkung": "Auswirkung auf das Angebot",
-          "klaerungsdatum": "Datum der Klärung"
+          "klaerungsdatum": "Datum der Klärung",
+          "dokumentation": "Dokumentation"
         },
         "lookups": {
           "art": {
@@ -1684,18 +1685,18 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
             "dringend": "Dringend"
           },
           "status": {
+            "offen": "Offen",
+            "in_bearbeitung": "In Bearbeitung",
             "rueckfrage_kunde": "Rückfrage an Kunde",
             "geklaert": "Geklärt",
-            "offen": "Offen",
-            "nicht_relevant": "Nicht relevant",
-            "in_bearbeitung": "In Bearbeitung"
+            "nicht_relevant": "Nicht relevant"
           },
           "auswirkung": {
+            "keine": "Keine",
             "preis": "Preis",
             "termin": "Termin",
             "technik": "Technik",
-            "ausschluss": "Ausschluss",
-            "keine": "Keine"
+            "ausschluss": "Ausschluss"
           }
         }
       }
@@ -1743,7 +1744,7 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
           "gesamtstatus": {
             "neu": "New",
             "in_klaerung": "Under Clarification",
-            "bereit_angebot": "Ready for Quotation",
+            "bereit_angebot": "Ready for Quotation Preparation",
             "angebot_erstellt": "Quotation Created",
             "abgelehnt": "Rejected"
           },
@@ -1766,18 +1767,19 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
           "art": "Clarification Type",
           "prioritaet": "Priority",
           "status": "Status",
-          "frist": "Deadline",
+          "frist": "Due Date",
           "bearbeiter_vorname": "Processor First Name",
           "bearbeiter_nachname": "Processor Last Name",
           "antwort": "Answer or Result",
           "auswirkung": "Impact on Quotation",
-          "klaerungsdatum": "Clarification Date"
+          "klaerungsdatum": "Clarification Date",
+          "dokumentation": "Documentation"
         },
         "lookups": {
           "art": {
             "technisch": "Technical",
             "kommerziell": "Commercial",
-            "termin": "Schedule",
+            "termin": "Deadline",
             "qualitaet": "Quality",
             "logistik": "Logistics",
             "rechtliches": "Legal",
@@ -1790,18 +1792,18 @@ export const LABELS: Record<CoreLocale, LabelBundle> = {
             "dringend": "Urgent"
           },
           "status": {
+            "offen": "Open",
+            "in_bearbeitung": "In Progress",
             "rueckfrage_kunde": "Query to Customer",
             "geklaert": "Clarified",
-            "offen": "Open",
-            "nicht_relevant": "Not relevant",
-            "in_bearbeitung": "In Progress"
+            "nicht_relevant": "Not Relevant"
           },
           "auswirkung": {
+            "keine": "None",
             "preis": "Price",
-            "termin": "Schedule",
+            "termin": "Deadline",
             "technik": "Technology",
-            "ausschluss": "Exclusion",
-            "keine": "None"
+            "ausschluss": "Exclusion"
           }
         }
       }

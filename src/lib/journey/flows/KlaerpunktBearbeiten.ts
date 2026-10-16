@@ -1,7 +1,7 @@
 /**
  * useKlaerpunktBearbeitenFlow — the plumbing of the flow « Klärpunkt beantworten », generated from the plan.
  *
- * Changes `klaerpunkte`: the record to change is picked (`flow.pick('klaerpunkte')`), the form is prefilled with its values; asks `antwort`, `auswirkung`, `status`, `bearbeiter_vorname`, `bearbeiter_nachname`.
+ * Changes `klaerpunkte`: the record to change is picked (`flow.pick('klaerpunkte')`), the form is prefilled with its values; asks `status`, `antwort`, `auswirkung`, `bearbeiter_vorname`, `bearbeiter_nachname`.
  * The hook OWNS: the form(s) with exactly these fields and the plan's required
  * ingredients, one record search per picked field (columns and filter from
  * the plan), and the submit plan with its fixed and derived values. A page
@@ -16,14 +16,14 @@
  *   messages  the sentence for an empty required field, per field
  *
  *   const flow = useKlaerpunktBearbeitenFlow({
- *     steps: { klaerpunkte: 1, antwort: 2, auswirkung: 2, status: 2, bearbeiter_vorname: 2, bearbeiter_nachname: 2 },
+ *     steps: { klaerpunkte: 1, status: 2, antwort: 2, auswirkung: 2, bearbeiter_vorname: 2, bearbeiter_nachname: 2 },
  *     items: { klaerpunkte: r => ({ id: r.id, title: fieldText(r, 'titel') }) },
  *   });
  *   <IntentWizardShell forms={flow.forms} draftKey={flow.draftKey} …>
  *     // the record this flow changes: <EntitySelectStep {...flow.picks.klaerpunkte.select} {...flow.pick('klaerpunkte')} />
+ *     <Bound form={flow.forms.klaerpunkte} name="status" />
  *     <Bound form={flow.forms.klaerpunkte} name="antwort" />
  *     <Bound form={flow.forms.klaerpunkte} name="auswirkung" />
- *     <Bound form={flow.forms.klaerpunkte} name="status" />
  *     <Bound form={flow.forms.klaerpunkte} name="bearbeiter_vorname" />
  *     <Bound form={flow.forms.klaerpunkte} name="bearbeiter_nachname" />
  *     <StepNav onNext={() => flow.validateStep(n)} />
@@ -94,10 +94,10 @@ export function useKlaerpunktBearbeitenFlow(options: KlaerpunktBearbeitenFlowOpt
   const steps = { ...DEFAULT_STEPS, ...(options.steps ?? {}) } as Record<string, number>;
   const [klaerpunkteTargetId, setKlaerpunkteTargetId] = useState<string | null>(null);
   const klaerpunkte = useStepForm('klaerpunkte', {
-    fields: ["antwort", "auswirkung", "status", "bearbeiter_vorname", "bearbeiter_nachname"],
-    steps: only(steps, ["antwort", "auswirkung", "status", "bearbeiter_vorname", "bearbeiter_nachname"]) as Record<string, number>,
-    initial: only(options.initial as FormValues | undefined, ["antwort", "auswirkung", "status", "bearbeiter_vorname", "bearbeiter_nachname"]),
-    messages: only(options.messages as Record<string, string> | undefined, ["antwort", "auswirkung", "status", "bearbeiter_vorname", "bearbeiter_nachname"]),
+    fields: ["status", "antwort", "auswirkung", "bearbeiter_vorname", "bearbeiter_nachname"],
+    steps: only(steps, ["status", "antwort", "auswirkung", "bearbeiter_vorname", "bearbeiter_nachname"]) as Record<string, number>,
+    initial: only(options.initial as FormValues | undefined, ["status", "antwort", "auswirkung", "bearbeiter_vorname", "bearbeiter_nachname"]),
+    messages: only(options.messages as Record<string, string> | undefined, ["status", "antwort", "auswirkung", "bearbeiter_vorname", "bearbeiter_nachname"]),
   });
   const forms: KlaerpunktBearbeitenForms = { klaerpunkte };
   const formList: StepForm[] = [klaerpunkte];
@@ -146,7 +146,7 @@ export function useKlaerpunktBearbeitenFlow(options: KlaerpunktBearbeitenFlowOpt
       onSelect: (id: string) => {
         setKlaerpunkteTargetId(id);
         const rec = picks.klaerpunkte.recordOf(id);
-        if (rec) klaerpunkte.reset({ antwort: fieldText(rec, "antwort"), auswirkung: fieldLookups(rec, "auswirkung").map(o => o.key), status: fieldLookup(rec, "status")?.key, bearbeiter_vorname: fieldText(rec, "bearbeiter_vorname"), bearbeiter_nachname: fieldText(rec, "bearbeiter_nachname"), });
+        if (rec) klaerpunkte.reset({ status: fieldLookup(rec, "status")?.key, antwort: fieldText(rec, "antwort"), auswirkung: fieldLookups(rec, "auswirkung").map(o => o.key), bearbeiter_vorname: fieldText(rec, "bearbeiter_vorname"), bearbeiter_nachname: fieldText(rec, "bearbeiter_nachname"), });
       },
       get record(): JourneyRecord | undefined { return klaerpunkteTargetId ? picks.klaerpunkte.recordOf(klaerpunkteTargetId) : undefined; },
     },
