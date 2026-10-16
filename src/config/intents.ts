@@ -20,6 +20,7 @@
 import type { ComponentType } from 'react';
 
 // <custom:intent-imports>
+import { IconMessageCheck, IconRosetteDiscountCheck } from '@tabler/icons-react';
 // </custom:intent-imports>
 
 export interface IntentLink {
@@ -42,6 +43,8 @@ export interface IntentLink {
 
 export const INTENTS: IntentLink[] = [
   // <custom:intents>
+  { path: '/intents/klaerpunkt-bearbeiten', label: { de: 'Klärpunkt beantworten', en: 'Answer clarification point' }, icon: IconMessageCheck, description: 'Ein Bereich beantwortet einen offenen Klärpunkt, hält die Auswirkung auf das Angebot fest und setzt ihn auf geklärt oder Rückfrage.' },
+  { path: '/intents/klaerung-abschliessen', label: { de: 'Anfrage freigeben', en: 'Release request for quotation' }, icon: IconRosetteDiscountCheck, description: 'Wenn alle Klärpunkte einer Anfrage erledigt sind, wird die Anfrage zur Angebotserstellung freigegeben.' },
   // </custom:intents>
 ];
 
@@ -52,7 +55,7 @@ export const INTENTS: IntentLink[] = [
  * purpose — a scaffold update resets it to false (self-healing if Phase 2
  * never ran).
  */
-export const INTENTS_PENDING = true;
+export const INTENTS_PENDING = false;
 
 /**
  * When the Phase-1 bundle was deployed (ISO, set by the service together with
