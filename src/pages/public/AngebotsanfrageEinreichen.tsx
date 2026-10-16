@@ -1,10 +1,14 @@
 import { useEffect, useMemo, useState } from 'react';
 import { PublicShell } from '@/components/PublicShell';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
+import { ChoiceGroup } from '@/components/blocks/ChoiceGroup';
 import { Bound } from '@/components/blocks/Bound';
 import { FieldErrorSummary } from '@/components/blocks/FieldErrorSummary';
 import { SuccessStep } from '@/components/blocks/SuccessStep';
-import { useStepForm, useJourneySubmit } from '@/lib/journey';
+import { useStepForm, useJourneySubmit, makeReference } from '@/lib/journey';
 import { createPublicPort } from '@/lib/journey/publicPort';
 import {
   loadPublicPagesConfig, prepareChallenge,
@@ -14,7 +18,15 @@ import { tx } from '@/i18n';
 
 const SLUG = 'angebotsanfrage-einreichen';
 
+type DocWay = 'link' | 'liste' | 'mail';
+
 export default function AngebotsanfrageEinreichen() {
+  const DOC_WAYS: Array<{ key: DocWay; label: string }> = [
+  { key: 'link', label: tx('Link zum Dokument') },
+  { key: 'liste', label: tx('Dokumente auflisten') },
+  { key: 'mail', label: tx('Per E-Mail nachreichen') },
+];
+
   const [cfg, setCfg] = useState<PublicPagesConfig | null>(null);
   const [page, setPage] = useState<PublicPageConfig | null>(null);
   const [loading, setLoading] = useState(true);
@@ -28,6 +40,10 @@ export default function AngebotsanfrageEinreichen() {
   }, []);
 
   const port = useMemo(() => (cfg && page ? createPublicPort(cfg, page) : null), [cfg, page]);
+
+  const [docWay, setDocWay] = useState<DocWay | null>(null);
+  const [docLink, setDocLink] = useState('');
+  const [docList, setDocList] = useState('');
 
   const anfrage = useStepForm('angebotsanfragen', {
     fields: [
@@ -49,6 +65,14 @@ export default function AngebotsanfrageEinreichen() {
       entity: 'angebotsanfragen',
       form: anfrage,
       primary: true,
+      values: () => {
+        const base = String(anfrage.get('beschreibung') ?? '').trim();
+        let note = '';
+        if (docWay === 'link' && docLink.trim()) note = `${tx('Dokumente per Link')}: ${docLink.trim()}`;
+        else if (docWay === 'liste' && docList.trim()) note = `${tx('Dokumente (Namen/Referenzen und Übermittlungsweg)')}:\n${docList.trim()}`;
+        else if (docWay === 'mail') note = tx('Dokumente werden per E-Mail nachgereicht (Referenz: siehe Anfrage-Referenz).');
+        return note ? { beschreibung: [base, note].filter(Boolean).join('\n\n') } : {};
+      },
     }],
     { draftKey: 'angebotsanfrage-einreichen' },
   );
@@ -71,7 +95,13 @@ export default function AngebotsanfrageEinreichen() {
           title={tx('Danke für deine Anfrage!')}
           whatHappensNext={tx('Wir haben deine Angebotsanfrage erhalten und melden uns bei dir. Bitte halte die Referenz für Rückfragen bereit.')}
           actions={{ copy: true, print: false }}
-        />
+        >
+          {docWay === 'mail' && (
+            <p className="mt-4 rounded-md border p-3 text-sm">
+              {tx`Sende deine Dokumente per E-Mail und nenne als Betreff diese Referenz: ${makeReference('angebotsanfragen', submit.result.primary.id)}`}
+            </p>
+          )}
+        </SuccessStep>
       </PublicShell>
     );
   }
@@ -95,6 +125,37 @@ export default function AngebotsanfrageEinreichen() {
           <Bound form={anfrage} name="angebotstermin" />
           <Bound form={anfrage} name="volumen" />
         </div>
+        <fieldset className="space-y-3 rounded-md border p-4">
+          <legend className="px-1 text-sm font-medium">{tx('Dokumente übergeben (optional)')}</legend>
+          <p id="doc-way-label" className="text-sm text-muted-foreground">
+            {tx('Hochladen ist hier nicht möglich. Wähle einen der drei Wege, um uns deine Unterlagen zu geben.')}
+          </p>
+          <ChoiceGroup
+            id="doc-way"
+            aria-labelledby="doc-way-label"
+            value={docWay}
+            onChange={k => setDocWay(k as DocWay | null)}
+            options={DOC_WAYS}
+            allowClear
+          />
+          {docWay === 'link' && (
+            <div className="space-y-1.5">
+              <Label htmlFor="doc-link">{tx('Link zu deinen Dokumenten (Cloud/Freigabe)')}</Label>
+              <Input id="doc-link" type="url" inputMode="url" placeholder={tx('https://')} value={docLink} onChange={e => setDocLink(e.target.value)} />
+            </div>
+          )}
+          {docWay === 'liste' && (
+            <div className="space-y-1.5">
+              <Label htmlFor="doc-list">{tx('Welche Dokumente gibt es und wie schickst du sie uns?')}</Label>
+              <Textarea id="doc-list" rows={4} value={docList} onChange={e => setDocList(e.target.value)} />
+            </div>
+          )}
+          {docWay === 'mail' && (
+            <p className="text-sm">
+              {tx('Nach dem Absenden zeigen wir dir eine Referenz. Nenne sie als Betreff, wenn du deine Dokumente per E-Mail schickst.')}
+            </p>
+          )}
+        </fieldset>
         <FieldErrorSummary forms={[anfrage]} />
         {submit.error && (
           <p role="alert" className="text-sm text-destructive">
