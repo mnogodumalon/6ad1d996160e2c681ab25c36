@@ -1,0 +1,70 @@
+Legend: `!` after a field name = required (from the app's base view) —
+a step form that writes such a field must not submit it empty.
+`^` after a field name = shown in the app's list view: the fields users
+recognize a record by — prefer them for select-card titles, stats and recall texts.
+A field's human label follows in quotes where it adds information (`kosten[number] "Kosten (EUR)"`) —
+use the label in every user-facing text, never the identifier.
+A lookup field lists its keys after the type (`[lookup/select: a|b|c]`);
+these are the ONLY valid write values — quote them into the brief verbatim;
+`key=Label` shows the human label where it differs (write the key, show the label).
+`·` lines carry a field's description from the app model — real process
+knowledge: use it for step texts and "why we ask this" hints.
+`≡` = how many records the app held when this was built — CONTEXT only
+(spot empty entities, size the flow). It never chooses the data path: every
+pick-a-record step goes through useRecordSearch, which counts at RUNTIME and
+switches to server-side search when the entity has grown since the build
+(check-intents 3k rejects an EntitySelectStep fed from a useDashboardData array).
+`◈` names the input FORM each field shape wants — range → calendar
+(AvailabilityRangePicker via form.range), choice → pills (ChoiceGroup), record →
+select step (EntitySelectStep), stock → show the quantity, warn on overshoot.
+Pick the form that fits the data; a plain field only when nothing better exists.
+`⚙` lists the service methods for that entity, spelled exactly.
+`✚` lists the entity's Enriched* fields and its enrich() signature,
+spelled exactly — quote both verbatim; an invented enriched field or
+a missing map is a guaranteed type error.
+
+Modules — YOUR import map for the dashboard overview. NEVER paste this block,
+a module path, a hook signature or an app_id into a flow or page brief: the
+lanes read these files themselves through their skill, and a brief that
+prescribed them cost every lane a gate round (live 07.09.2026 — wrong vSQL
+and a `createRecordUrl` call copied into three flows). A brief carries the
+domain: steps, eligible records, fields as `name![type: keys]`, sentences.
+  @/types/app                            entity types, APP_IDS, LOOKUP_OPTIONS
+  @/types/enriched                       EnrichedAngebotsanfragen, EnrichedKlaerpunkte — the COMPLETE list, no other Enriched* type exists
+  @/lib/enrich                           the enrich functions — exact fields and signatures on the `✚` line of each entity below; every listed map is REQUIRED, and no other enriched field exists
+  @/services/livingAppsService           LivingAppsService, createRecordUrl, extractRecordId — dashboard overview only; a flow writes through its plan (create) or `updates: id` (update), never through the service (gate 3z)
+  @/hooks/useDashboardData               useDashboardData — DASHBOARD OVERVIEW ONLY: the RAW arrays (one per entity, camelCase), their setters, loading, error, fetchAll. Never in a flow page (gate 3y): a flow reads through the journey layer (useRecordSearch, useOccupancy, x.recordOf) + angebotsanfragenMap, geschaeftsbereicheMap; it carries NO enriched arrays — build those with the `✚` call below
+  @/lib/formatters                       lookupKey, formatDate
+  @/lib/journey                          useStepForm, useJourneySubmit (plan steps: create, or `updates: id` for a change; `link` for references), useRecordSearch (searchFields, filter, where; toItem OPTIONAL — the card is the display name; `(r, ctx) => ctx.ref('gast')` for a referenced record's name), useOccupancy (blocked · freeIn · isFree — availability through the door), useRecordCount (count — ONE number over many records: capacity, open items; never a second useRecordSearch for a count), fieldText, fieldLookup, fieldNumber, fieldDate, fieldRef, makeReference, SHAPES — validation, plan runner, reference, names; door-agnostic. There are NO `<key>Name` fields on a journey record.
+  @/services/journeyPort                 servicePort — the INTERNAL door of the journey port (list · create · update · ref); hand it to useJourneySubmit, useRecordSearch, useOccupancy and to blocks — every write goes through the plan
+  @/lib/polish                           undoToast — success toast with an undo action (every delete in a flow)
+  @/components/blocks/IntentWizardShell  IntentWizardShell, WizardStep (label, heading, needs=[field keys] renders the way back), useWizard — forms=, draftKey=, intro=
+  @/components/blocks/StepNav            StepNav — Back / Continue with the next step's name; onNext returns form.validate(...)
+  @/components/blocks/SummaryStep        SummaryStep — check-answers step before EVERY write (forms=, submit=)
+  @/components/blocks/SuccessStep        SuccessStep — final step from submit.result: reference, facts, next actions; submit= adds „Noch einmal“
+  @/components/blocks/ChoiceGroup        ChoiceGroup — pill radiogroup for a lookup with few options ({...form.choice(key)})
+  @/components/blocks/EntitySelectStep   EntitySelectStep — onSelect, selectedId; adapts cards/search-first to the count; ALWAYS fed via {...x.select} from useRecordSearch; „Neu anlegen“ is BUILT IN (the entity's required fields, created through the port) — never brief a hand-written mini-form
+  @/components/blocks/StatusBadge        StatusBadge, getStatusColor
+  @/components/blocks/BudgetTracker      BudgetTracker
+  @/components/blocks/AvailabilityRangePicker  AvailabilityRangePicker, rangeIsFree, isNightBlocked ({...form.range(from, to, { blocked })})
+There is NO `@/config/appIds`, no `@/config/lookupOptions` and no
+`@/lib/urlUtils` — APP_IDS and LOOKUP_OPTIONS come from `@/types/app`,
+createRecordUrl from the service. Note the lowercase `l` in the service path.
+
+- Geschäftsbereiche (geschaeftsbereiche): bezeichnung!^[string/text], kuerzel^[string/text], zustaendigkeit^[string/textarea], ansprechpartner_vorname^[string/text] "Vorname der Ansprechperson", ansprechpartner_nachname^[string/text] "Nachname der Ansprechperson", ansprechpartner_email[string/email] "E-Mail der Ansprechperson", ansprechpartner_telefon[string/tel] "Telefon der Ansprechperson", aktiv[bool] "Bereich ist aktiv"
+  ≡ 3 records at build time
+  ⚙ getGeschaeftsbereiche() · getGeschaeftsbereicheEntry(id) · createGeschaeftsbereicheEntry(fields) · updateGeschaeftsbereicheEntry(id, fields) · deleteGeschaeftsbereicheEntry(id) · queryGeschaeftsbereiche({ filter, orderby, limit, offset, fields }) · countGeschaeftsbereiche(filter?)
+- Angebotsanfragen (angebotsanfragen): anfragenummer!^[string/text], projekt!^[string/text] "Projekt- bzw. Produktbezeichnung", eingangsdatum^[date/date], angebotstermin^[date/date] "Gewünschter Angebotstermin", volumen^[number] "Geschätztes Volumen in Euro", kunde_firma![string/text], kunde_vorname[string/text] "Vorname Ansprechperson beim Kunden", kunde_nachname[string/text] "Nachname Ansprechperson beim Kunden", beschreibung[string/textarea] "Beschreibung der Anfrage", gesamtstatus![lookup/select: neu|in_klaerung|bereit_angebot=Bereit zur Angebotserstellung|angebot_erstellt|abgelehnt], prioritaet[lookup/radio: niedrig|normal|hoch|dringend], federfuehrender_bereich[applookup/select], vertrieb_vorname[string/text] "Vorname Vertriebsverantwortliche/r", vertrieb_nachname[string/text] "Nachname Vertriebsverantwortliche/r", bemerkungen[string/textarea] "Interne Bemerkungen"
+  ≡ 3 records at build time
+  ◈ gesamtstatus → choice (5 options, ChoiceGroup) · prioritaet → choice (4 options, ChoiceGroup) · federfuehrender_bereich → record (geschaeftsbereiche, EntitySelectStep)
+  ⚙ getAngebotsanfragen() · getAngebotsanfragenEntry(id) · createAngebotsanfragenEntry(fields) · updateAngebotsanfragenEntry(id, fields) · deleteAngebotsanfragenEntry(id) · queryAngebotsanfragen({ filter, orderby, limit, offset, fields }) · countAngebotsanfragen(filter?)
+  ✚ EnrichedAngebotsanfragen adds ONLY federfuehrender_bereichName — via enrichAngebotsanfragen(angebotsanfragen, { geschaeftsbereicheMap }), all maps required
+  → federfuehrender_bereich links to app_id 6ad1d97cb027ce424a9af825
+- Klärpunkte (klaerpunkte): anfrage!^[applookup/select] "Angebotsanfrage", geschaeftsbereich!^[applookup/select] "Zuständiger Geschäftsbereich", titel!^[string/text], frage^[string/textarea] "Beschreibung der Frage", art^[lookup/select: technisch|kommerziell|termin|qualitaet|logistik|rechtliches|sonstiges] "Art der Klärung", prioritaet[lookup/radio: niedrig|normal|hoch|dringend], status![lookup/select: rueckfrage_kunde=Rückfrage an Kunde|geklaert|offen|nicht_relevant|in_bearbeitung], frist[date/date], bearbeiter_vorname[string/text] "Vorname Bearbeiter/in", bearbeiter_nachname[string/text] "Nachname Bearbeiter/in", antwort[string/textarea] "Antwort bzw. Ergebnis", auswirkung[multiplelookup/checkbox: preis|termin|technik|ausschluss|keine] "Auswirkung auf das Angebot", klaerungsdatum[date/date] "Datum der Klärung"
+  ≡ 3 records at build time
+  · auswirkung: Arbitrary number of selected options out of multiple available ones. The available options are defined in the `lookup_data` attribute of this control. The field value will be a list of keys from this `lookup_data` attribute. Displayed as multiple checkbox fields in HTML pages.
+  ◈ prioritaet → choice (4 options, ChoiceGroup) · status → choice (5 options, ChoiceGroup) · anfrage → record (angebotsanfragen, EntitySelectStep) · geschaeftsbereich → record (geschaeftsbereiche, EntitySelectStep)
+  ⚙ getKlaerpunkte() · getKlaerpunkteEntry(id) · createKlaerpunkteEntry(fields) · updateKlaerpunkteEntry(id, fields) · deleteKlaerpunkteEntry(id) · queryKlaerpunkte({ filter, orderby, limit, offset, fields }) · countKlaerpunkte(filter?)
+  ✚ EnrichedKlaerpunkte adds ONLY anfrageName, geschaeftsbereichName — via enrichKlaerpunkte(klaerpunkte, { angebotsanfragenMap, geschaeftsbereicheMap }), all maps required
+  → anfrage links to app_id 6ad1d97ff01694f8d7792c91
+  → geschaeftsbereich links to app_id 6ad1d97cb027ce424a9af825

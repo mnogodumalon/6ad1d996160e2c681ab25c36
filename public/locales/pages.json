@@ -1,0 +1,38 @@
+{
+  "pages": {
+    "en": {
+      "Alle Klärpunkte sind geklärt — {0} im Blick.": "All clarification items are clarified — {0} in focus.",
+      "Als geklärt markieren": "Mark as clarified",
+      "Angebot erstellt": "Quotation created",
+      "Bearbeitung starten": "Start processing",
+      "Bereit zur Angebotserstellung": "Ready for quotation",
+      "Bereit zur Angebotserstellung: {0}.": "Ready for quotation: {0}.",
+      "Erfasse die erste Angebotsanfrage und verteile Klärpunkte an die Bereiche.": "Capture the first quotation request and distribute clarification items to the departments.",
+      "Erste Anfrage erfassen": "Capture first request",
+      "Frist überschritten bei {0} — dort hakt es gerade.": "Deadline exceeded at {0} — that's where it's stuck right now.",
+      "Geschäftsbereich": "Business unit",
+      "In Klärung setzen": "Set to in clarification",
+      "Klärpunkt anlegen": "Create clarification item",
+      "Klärpunkte geklärt": "Clarification items clarified",
+      "Neue Anfrage": "New request",
+      "Nichts offen — bereit: {0}": "Nothing open — ready: {0}",
+      "Nichts offen.": "Nothing open.",
+      "Noch 1 offener Klärpunkt — erst klären, dann freigeben.": "1 open clarification item left — clarify first, then release.",
+      "Noch keine Angebotsanfragen — leg die erste an und klär sie mit den Geschäftsbereichen.": "No quotation requests yet — create the first one and clarify it with the business units.",
+      "Noch {0} offene Klärpunkte — erst klären, dann freigeben.": "{0} open clarification items left — clarify first, then release.",
+      "Offen": "Open",
+      "Offene Klärpunkte je Geschäftsbereich": "Open clarification items by business unit",
+      "Offene Klärpunkte nach Frist": "Open clarification items by deadline",
+      "Offene Klärpunkte warten bei {0}.": "Open clarification items are waiting at {0}.",
+      "Termin in ≤ 14 Tagen": "Due within ≤ 14 days",
+      "Termin {0}": "Due {0}",
+      "ohne Termin": "no due date",
+      "{0} ({1}) ist überfällig — Frist war {2}.": "{0} ({1}) is overdue — deadline was {2}.",
+      "{0} Klärpunkte überfällig, zuerst {1} ({2}, Frist {3}).": "{0} clarification items overdue, first {1} ({2}, deadline {3}).",
+      "{0} offen · {1} geklärt · {2}": "{0} open · {1} clarified · {2}",
+      "Öffnen": "Open",
+      "✓ Geklärt": "✓ Clarified"
+    }
+  },
+  "v": 1
+}

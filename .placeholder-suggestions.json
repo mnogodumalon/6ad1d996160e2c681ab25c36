@@ -1,0 +1,37 @@
+{
+  "GeschaeftsbereicheDialog.tsx": {
+    "bezeichnung": "z. B. Elektrotechnik",
+    "kuerzel": "z. B. ET",
+    "zustaendigkeit": "Wofür ist der Bereich zuständig?",
+    "ansprechpartner_vorname": "z. B. Anna",
+    "ansprechpartner_nachname": "z. B. Müller",
+    "ansprechpartner_email": "z. B. anna.mueller@firma.de"
+  },
+  "AngebotsanfragenDialog.tsx": {
+    "anfragenummer": "z. B. AF-2026-001",
+    "projekt": "z. B. Hydraulikpumpe Typ X",
+    "eingangsdatum": "Wann ging die Anfrage ein?",
+    "angebotstermin": "Bis wann braucht der Kunde das Angebot?",
+    "volumen": "z. B. 25000",
+    "kunde_firma": "z. B. Müller Maschinenbau GmbH",
+    "kunde_vorname": "z. B. Anna",
+    "kunde_nachname": "z. B. Schmidt",
+    "beschreibung": "Worum geht es in der Anfrage?",
+    "federfuehrender_bereich": "Welcher Bereich führt?",
+    "vertrieb_vorname": "z. B. Thomas",
+    "vertrieb_nachname": "z. B. Weber",
+    "bemerkungen": "Interne Hinweise zur Anfrage"
+  },
+  "KlaerpunkteDialog.tsx": {
+    "anfrage": "Welche Anfrage?",
+    "geschaeftsbereich": "Welcher Geschäftsbereich?",
+    "titel": "z. B. Toleranz Bohrung",
+    "frage": "Was ist zu klären?",
+    "art": "z. B. Technisch, Termin",
+    "frist": "Bis wann klären?",
+    "bearbeiter_vorname": "z. B. Anna",
+    "bearbeiter_nachname": "z. B. Müller",
+    "antwort": "Was ist das Ergebnis?",
+    "klaerungsdatum": "Wann wurde geklärt?"
+  }
+}

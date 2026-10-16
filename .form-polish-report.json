@@ -1,0 +1,34 @@
+{
+  "entities": {
+    "Geschäftsbereiche": {
+      "placeholders_set": 6,
+      "defaults_keys": [
+        "aktiv"
+      ],
+      "computed_keys": [],
+      "reason": "Reine Stammdaten ohne numerische Felder, daher keine Formeln."
+    },
+    "Angebotsanfragen": {
+      "placeholders_set": 13,
+      "defaults_keys": [
+        "eingangsdatum",
+        "angebotstermin",
+        "gesamtstatus",
+        "prioritaet"
+      ],
+      "computed_keys": [
+        "_anfrage_dauer_tage"
+      ],
+      "reason": "Eingangsdatum und Angebotstermin bilden ein Datumspaar, daher wird die Dauer in Tagen als virtuelles Feld berechnet; ein Preis über applookup existiert nicht."
+    },
+    "Klärpunkte": {
+      "placeholders_set": 10,
+      "defaults_keys": [
+        "status",
+        "prioritaet"
+      ],
+      "computed_keys": [],
+      "reason": "Keine Formeln, da der Klärpunkt keine numerischen Felder oder Datumspaare zur Berechnung enthält."
+    }
+  }
+}
