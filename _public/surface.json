@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "pages": [
+    {
+      "slug": "angebotsanfrage-einreichen",
+      "component": "AngebotsanfrageEinreichen",
+      "title": "Angebotsanfrage einreichen",
+      "endpoints": [
+        {
+          "entity": "angebotsanfragen",
+          "op": "create",
+          "fields": [
+            "projekt",
+            "kunde_firma",
+            "kunde_vorname",
+            "kunde_nachname",
+            "beschreibung",
+            "angebotstermin",
+            "volumen"
+          ]
+        }
+      ]
+    }
+  ]
+}
